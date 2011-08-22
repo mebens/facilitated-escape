@@ -183,7 +183,7 @@ function changeState(to)
     blocks.reset()
     shipTweens()
     tween(0.25, _G, { uiAlpha = 255 })
-    tween(0.25, scoreText.color, { [4] = 0 }, nil, function() scoreText = nil end)
+    if scoreText then tween(0.25, scoreText.color, { [4] = 0 }, nil, function() scoreText = nil end) end
   elseif state == "game" and to == "score" then
     scoreText = {
       message = "You travelled",

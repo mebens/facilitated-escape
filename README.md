@@ -13,11 +13,15 @@ The `.love` file will need to be run using LÖVE's executable, which you can dow
 
 (All instructions are on-screen too.) The aim is to avoid the oncoming blocks, or your ship will explode. Use the left and right arrows to move (be careful, the controls are touchy). Press M to mute/unmute the music. Press P to pause (the game will also pause if the window loses focus). Press escape to quit.
 
-## Primary Software Used
+## Software Used
 
 * [LÖVE](http://love2d.org) - The game engine
 * [TextMate](http://macromates.com) - Text editor to write the code
 * [Pixen](https://github.com/philippec/Pixen) - Pixel editor to make the art
+* [GarageBand](http://www.apple.com/au/ilife/garageband/) - Music editor to make the music track. I used [Magical 8bit Plug](http://www.ymck.net/magical8bitplug/index.html) to create the 8-bit tones.
+* [Bfxr](http://www.bfxr.net/) - Web-based sound effect generator based on Sfxr.
+* [Audacity](http://audacity.sourceforge.net/) - Sound editor which I used to convert all sounds to Ogg Vorbis format.
+* [Adobe Photoshop Elements](http://www.adobe.com/products/photoshopel/) - Cut down version of the most used image editor, Photoshop. I used this (version 6) to quickly combine two sets of tiles.
 
 ## Credits
 
