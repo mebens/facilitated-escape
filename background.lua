@@ -1,5 +1,7 @@
+-- Module to generate and draw the background
+
 background = {}
-background.cameraScale = 0.6
+background.cameraScale = 0.4
 background.xTiles = math.ceil(width / tileSize)
 background.yTiles = math.ceil(height / tileSize) + 1
 background.width = background.xTiles * tileSize
@@ -9,7 +11,7 @@ background.base = newFramebuffer(background.width, background.height)
 background.base:renderTo(function()
   for x = 0, background.xTiles - 1 do
     for y = 0, background.yTiles - 1 do
-      love.graphics.drawq(tiles, quads[9], x * tileSize, y * tileSize, 0, 2)
+      love.graphics.drawq(tiles, quads[24], x * tileSize, y * tileSize, 0, 2)
     end
   end
 end)
@@ -30,7 +32,7 @@ local function newBuffer()
     for i = 1, specials do
       local length = math.random(1, 5)
       local dir = math.random(0, 1) == 0 and "x" or "y"
-      local type = math.random(10, 11)
+      local type = math.random(20, 23)
       
       if dir == "x" then
         local xPos = math.random(0, background.xTiles - 1 - length)

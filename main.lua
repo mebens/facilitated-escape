@@ -34,17 +34,35 @@ function love.load()
   local th = tiles:getHeight()
   
   quads = {
+    -- foreground
     love.graphics.newQuad(0, 0, 12, 12, tw, th),
     love.graphics.newQuad(13, 0, 12, 12, tw, th),
     love.graphics.newQuad(26, 0, 12, 12, tw, th),
+    love.graphics.newQuad(39, 0, 12, 12, tw, th),
+    love.graphics.newQuad(52, 0, 12, 12, tw, th),
+    love.graphics.newQuad(65, 0, 12, 12, tw, th),
+    love.graphics.newQuad(78, 0, 12, 12, tw, th),
+    love.graphics.newQuad(91, 0, 12, 12, tw, th),
+    love.graphics.newQuad(104, 0, 12, 12, tw, th),
     love.graphics.newQuad(0, 13, 12, 12, tw, th),
     love.graphics.newQuad(13, 13, 12, 12, tw, th),
     love.graphics.newQuad(26, 13, 12, 12, tw, th),
-    love.graphics.newQuad(0, 26, 12, 12, tw, th),
-    love.graphics.newQuad(13, 26, 12, 12, tw, th),
-    love.graphics.newQuad(39, 0, 12, 12, tw, th), -- dark tiles start here
     love.graphics.newQuad(39, 13, 12, 12, tw, th),
-    love.graphics.newQuad(26, 26, 12, 12, tw, th)
+    
+    -- middleground
+    love.graphics.newQuad(52, 13, 12, 12, tw, th),
+    love.graphics.newQuad(65, 13, 12, 12, tw, th),
+    love.graphics.newQuad(78, 13, 12, 12, tw, th),
+    love.graphics.newQuad(91, 13, 12, 12, tw, th),
+    love.graphics.newQuad(104, 13, 12, 12, tw, th),
+    love.graphics.newQuad(0, 26, 12, 12, tw, th),
+    
+     -- background
+    love.graphics.newQuad(13, 26, 12, 12, tw, th),
+    love.graphics.newQuad(26, 26, 12, 12, tw, th),
+    love.graphics.newQuad(39, 26, 12, 12, tw, th),
+    love.graphics.newQuad(52, 26, 12, 12, tw, th),
+    love.graphics.newQuad(65, 26, 12, 12, tw, th)
   }
   
   -- files

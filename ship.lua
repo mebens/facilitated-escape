@@ -1,3 +1,5 @@
+-- Module to handle the player's rocket
+
 ship = {}
 ship.width = 24
 ship.height = 56

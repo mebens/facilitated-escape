@@ -1,3 +1,5 @@
+-- Module to handle the camera
+
 camera = {}
 camera.x = 0
 camera.y = ship.y + ship.height / 2 - height / 1.12

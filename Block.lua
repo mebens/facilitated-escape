@@ -1,3 +1,5 @@
+-- Class to create, draw, and update a foreground block
+
 Block = {}
 Block.__index = Block
 
@@ -22,15 +24,15 @@ function Block:new(x, y, width, height, collidable)
         local quad
         
         if x == 0 and y == 0 then
-          quad = quads[5]
+          quad = quads[10]
         elseif x == 0 and y == t.yTiles - 1 then
-          quad = quads[7]
+          quad = quads[12]
         elseif x == t.xTiles - 1 and y == 0 then
-          quad = quads[6]
+          quad = quads[11]
         elseif x == t.xTiles - 1 and y == t.yTiles - 1 then
-          quad = quads[8]
+          quad = quads[13]
         else
-          quad = quads[4]
+          quad = quads[9]
         end
         
         love.graphics.drawq(tiles, quad, x * tileSize, y * tileSize, 0, 2)
@@ -41,7 +43,13 @@ function Block:new(x, y, width, height, collidable)
     for i = 1, math.random(0, math.ceil(t.xTiles * t.yTiles / 8)) do
       local length = math.random(1, 5)
       local dir = math.random(0, 1) == 0 and "x" or "y"
-      local type = math.random(1, 8) == 1 and 2 or (math.random(1, 2) == 1 and 1 or 3)
+      local type = math.random(1, 40)
+      
+      if type <= 5 then
+        type = type + 3
+      else
+        type = math.random(1, 3)
+      end
       
       if dir == "x" then
         length = math.min(length, t.xTiles)

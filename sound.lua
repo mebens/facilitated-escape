@@ -1,3 +1,5 @@
+-- Module to handle music and sound effects
+
 local data = {
   rumble = love.sound.newSoundData("sounds/rumble.ogg"),
   smallRumble = love.sound.newSoundData("sounds/small-rumble.ogg"),

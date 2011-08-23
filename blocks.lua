@@ -1,3 +1,5 @@
+-- Module to handle and generate the foreground blocks
+
 blocks = {}
 blocks.count = 0
 blocks.generateStep = 600
@@ -5,21 +7,11 @@ blocks.lastGenerate = 0
 
 function blocks.update(dt)
   if math.abs(camera.y - blocks.lastGenerate) >= blocks.generateStep then blocks.generate() end
-  local v = blocks.first
-  
-  while v do
-    v:update(dt)
-    v = v.next
-  end
+  for v in list.each(blocks) do v:update(dt) end
 end
 
 function blocks.draw()
-  local v = blocks.first
-  
-  while v do
-    v:draw()
-    v = v.next
-  end
+  for v in list.each(blocks) do v:draw() end
 end
 
 function blocks.generate()
@@ -46,50 +38,15 @@ function blocks.generate()
 end
 
 function blocks.add(block)
-  if not blocks.first then
-    blocks.first = block
-    blocks.last = block
-  else
-    blocks.last.next = block
-    block.prev = blocks.last
-    blocks.last = block
-  end
-  
-  blocks.count = blocks.count + 1
-  return block
+  return list.add(blocks, block)
 end
 
 function blocks.remove(block)
-  if block.next then
-    if block.prev then
-      block.next.prev = block.prev
-      block.prev.next = block.next
-    else
-      block.next.prev = nil
-      blocks.first = block.next
-    end
-  elseif block.prev then
-    block.prev.next = nil
-    blocks.last = block.prev
-  else
-    blocks.first = nil
-    blocks.last = nil
-  end
-  
-  block.next = nil
-  block.prev = nil
-  blocks.count = blocks.count - 1
+  list.remove(blocks, block)
 end
 
 function blocks.reset()
-  local v = blocks.first
-  
-  while v do
-    local next = v.next
-    blocks.remove(v)
-    v = next
-  end
-  
+  list.clear(blocks)
   Block:new(-tileSize, ship.y + ship.height, width + tileSize, 200, false)
   blocks.generate()
 end
