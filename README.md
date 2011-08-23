@@ -2,10 +2,10 @@ This game was created in less than 48 hours using the [LÖVE game engine](http:/
 
 ## Download
 
-* [Windows](http://nova-fusion.com/games/facilitated-escape/windows.zip)
-* [Mac](http://nova-fusion.com/games/facilitated-escape/mac.zip)
-* [Linux](http://nova-fusion.com/games/facilitated-escape/linux.zip)
-* [.love](http://nova-fusion.com/games/facilitated-escape/game.love)
+* [Windows](http://nova-fusion.com/games/facilitated-escape/facilitated-escape-windows.zip)
+* [Mac](http://nova-fusion.com/games/facilitated-escape/facilitated-escape-mac.zip)
+* [Linux](http://nova-fusion.com/games/facilitated-escape/facilitated-escape-linux.zip)
+* [.love](http://nova-fusion.com/games/facilitated-escape/facilitated-escape.love)
 
 The `.love` file will need to be run using LÖVE's executable, which you can download from its [homepage](http://love2d.org). Alternatively, you could download the source and run the folder/zip with LÖVE.
 
