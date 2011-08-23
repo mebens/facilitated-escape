@@ -1,7 +1,6 @@
 -- Module to handle music and sound effects
 
 local data = {
-  rumble = love.sound.newSoundData("sounds/rumble.ogg"),
   smallRumble = love.sound.newSoundData("sounds/small-rumble.ogg"),
   smallRumble2 = love.sound.newSoundData("sounds/small-rumble2.ogg")
 }
@@ -26,6 +25,9 @@ engine:setVolume(0.2)
 local death = love.audio.newSource("sounds/death.ogg", "static")
 death:setVolume(0.5)
 
+local rumble = love.audio.newSource("sounds/rumble.ogg", "static")
+rumble:setVolume(0.5)
+
 sound = {}
 
 function sound.death()
@@ -33,9 +35,7 @@ function sound.death()
 end
 
 function sound.rumble()
-  local source = love.audio.newSource(data.rumble)
-  source:setVolume(0.5)
-  source:play()
+  rumble:play()
 end
 
 function sound.engine()

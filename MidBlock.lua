@@ -9,8 +9,8 @@ function MidBlock:new(x, y, size)
     y = y,
     tiles = math.ceil(size / tileSize)
   }, MidBlock)
+  
   t.size = t.tiles * tileSize
-  print(size, t.tiles, t.size)
   t.image = newFramebuffer(t.size, t.size)
   
   t.image:renderTo(function()
