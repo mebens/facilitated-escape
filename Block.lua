@@ -87,7 +87,7 @@ end
 function Block:update(dt)
   if self.collidable
   and ship.x + ship.width >= self.x and ship.x <= self.x + self.width
-  and ship.y + ship.height >= self.y and ship.y <= self.y + self.height
+  and ship.y + ship.height - 12 >= self.y and ship.y + 15 <= self.y + self.height
   then
     ship.collide()
   end

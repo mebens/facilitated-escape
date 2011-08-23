@@ -1,3 +1,9 @@
+-- TODO
+-- more tiles and layers
+-- possibly update sound effects and music
+-- shootable obstables
+-- score tracking
+
 function love.load()
   -- setup random numbers
   math.randomseed(os.time())
@@ -12,6 +18,7 @@ function love.load()
   meter = 12
   state = "pre-title" -- "pre-title", "title", "game", "pause", or "score"
   userMuted = false
+  rumbleTimer = 0
   math.tau = math.pi * 2
   
   -- resources
@@ -73,7 +80,7 @@ function love.update(dt)
     tween.update(dt)
     cron.update(dt)
   end
-  
+    
   if state == "game" or state == "score" then ship.update(dt) end
   if state == "game" then blocks.update(dt) end
 end
@@ -167,13 +174,20 @@ function changeState(to)
   elseif state == "title" and to == "game" then
     state = "game"
     sound.engine()
-    processShake()
     shipTweens()
     tween(0.25, titleText.color, { [4] = 0 }, nil, function() titleText = nil end)
     
     -- tween in UI
     uiAlpha = 0
     tween(0.25, _G, { uiAlpha = 255 })
+    
+    -- start rumbling
+    cron.every(3, function()
+      if state == "game" and math.random(1, 6) == 1 then
+        camera.shake(4)
+        sound.rumble()
+      end
+    end)
   elseif state == "score" and to == "game" then
     state = "game"    
     ship.reset()
@@ -235,17 +249,6 @@ function newFramebuffer(width, height)
   end
   
   return fb
-end
-
-function processShake()
-  cron.after(4, function()
-    if state == "game" and math.random(1, 5) == 1 then
-      camera.shake(4)
-      sound.rumble()
-    end
-    
-    processShake()
-  end)
 end
 
 function shipTweens()
