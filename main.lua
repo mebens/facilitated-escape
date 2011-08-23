@@ -68,12 +68,14 @@ function love.load()
   -- files
   tween = require("lib.tween")
   cron = require("lib.cron")
+  require("list")
   require("ship")
   require("camera")
   require("background")
   require("blocks")
-  require("Block")
   require("sound")
+  require("Block")
+  require("MidBlock")
   
   -- scene/setup
   blocks.reset()
@@ -108,8 +110,16 @@ function love.draw()
   background.draw()
   camera.unset()
   
+  --[[love.graphics.setColor(0, 0, 0, 75)
+  love.graphics.rectangle("fill", 0, 0, width, height)
+  love.graphics.setColor(255, 255, 255)]]
+  
+  camera.set(blocks.middle.cameraScale)
+  blocks.middle.draw()
+  camera.unset()
+  
   camera.set()
-  blocks.draw()
+  blocks.front.draw()
   ship.draw()
   camera.unset()
   

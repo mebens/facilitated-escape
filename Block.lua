@@ -12,16 +12,16 @@ function Block:new(x, y, width, height, collidable)
     collidable = collidable
   }, Block)
   
+  if collidable == nil then t.collidable = true end
   t.width = tileSize * t.xTiles
   t.height = tileSize * t.yTiles
-  if collidable == nil then t.collidable = true end
-  local fb = newFramebuffer(t.width, t.height)
+  t.image = newFramebuffer(t.width, t.height)
   
-  fb:renderTo(function()
+  t.image:renderTo(function()
     -- base and corners
     for x = 0, t.xTiles - 1 do
       for y = 0, t.yTiles - 1 do
-        local quad
+        local quad = quads[9]
         
         if x == 0 and y == 0 then
           quad = quads[10]
@@ -31,8 +31,6 @@ function Block:new(x, y, width, height, collidable)
           quad = quads[11]
         elseif x == t.xTiles - 1 and y == t.yTiles - 1 then
           quad = quads[13]
-        else
-          quad = quads[9]
         end
         
         love.graphics.drawq(tiles, quad, x * tileSize, y * tileSize, 0, 2)
@@ -88,8 +86,7 @@ function Block:new(x, y, width, height, collidable)
     end
   end)
   
-  t.image = fb
-  return blocks.add(t)
+  return t
 end
 
 function Block:update(dt)
@@ -100,8 +97,7 @@ function Block:update(dt)
     ship.collide()
   end
   
-  -- linked list removal - triggered by going off the screen
-  if self.y > camera.y + height then blocks.remove(self) end
+  if self.y > camera.y + height then self.list.remove(self) end
 end
 
 function Block:draw()

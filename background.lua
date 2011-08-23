@@ -1,7 +1,7 @@
 -- Module to generate and draw the background
 
 background = {}
-background.cameraScale = 0.4
+background.cameraScale = 0.3
 background.xTiles = math.ceil(width / tileSize)
 background.yTiles = math.ceil(height / tileSize) + 1
 background.width = background.xTiles * tileSize
