@@ -31,7 +31,7 @@ function love.load()
 
   particle = love.graphics.newImage("images/particle.png")
   tiles = love.graphics.newImage("images/tiles.png")
-  tiles:setFilter("nearest", "nearest")
+  tiles:setFilter("nearest", "nearest") -- makes it pixelated, not blurry
   local tw = tiles:getWidth()
   local th = tiles:getHeight()
   
@@ -70,15 +70,15 @@ function love.load()
   -- files
   tween = require("lib.tween")
   cron = require("lib.cron")
-  require("list")
-  require("text")
-  require("ship")
-  require("camera")
-  require("background")
-  require("blocks")
-  require("sound")
-  require("Block")
-  require("MidBlock")
+  require("modules.list")
+  require("modules.text")
+  require("modules.ship")
+  require("modules.camera")
+  require("modules.background")
+  require("modules.blocks")
+  require("modules.sound")
+  require("classes.Block")
+  require("classes.MidBlock")
   
   -- world setup
   blocks.reset()

@@ -6,7 +6,7 @@ ship.height = 56
 ship.xSpeed = 450
 ship.yIncrease = 10
 ship.image = love.graphics.newImage("images/ship.png")
-ship.image:setFilter("nearest", "nearest") -- makes it pixelated, not blurry
+ship.image:setFilter("nearest", "nearest")
 
 local ps = love.graphics.newParticleSystem(particle, 1000)
 ps:setEmissionRate(10000)
