@@ -22,12 +22,14 @@ function love.load()
   math.tau = math.pi * 2
   
   -- resources
-  font14 = love.graphics.newFont("fonts/uni05.ttf", 14)
-  font16 = love.graphics.newFont("fonts/uni05.ttf", 16)
-  font28 = love.graphics.newFont("fonts/uni05.ttf", 28)
-  font36 = love.graphics.newFont("fonts/uni05.ttf", 36)
+  fonts = {
+    [14] = love.graphics.newFont("fonts/uni05.ttf", 14),
+    [16] = love.graphics.newFont("fonts/uni05.ttf", 16),
+    [28] = love.graphics.newFont("fonts/uni05.ttf", 28),
+    [36] = love.graphics.newFont("fonts/uni05.ttf", 36)
+  }
+
   particle = love.graphics.newImage("images/particle.png")
-  
   tiles = love.graphics.newImage("images/tiles.png")
   tiles:setFilter("nearest", "nearest")
   local tw = tiles:getWidth()
@@ -78,7 +80,7 @@ function love.load()
   require("Block")
   require("MidBlock")
   
-  -- scene/setup
+  -- world setup
   blocks.reset()
   cron.after(1, changeState, "title")
   flashAlpha = 0
