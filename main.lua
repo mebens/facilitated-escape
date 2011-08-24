@@ -69,6 +69,7 @@ function love.load()
   tween = require("lib.tween")
   cron = require("lib.cron")
   require("list")
+  require("text")
   require("ship")
   require("camera")
   require("background")
@@ -119,41 +120,7 @@ function love.draw()
   ship.draw()
   camera.unset()
   
-  if titleText then
-    love.graphics.setColor(titleText.color)
-    love.graphics.setFont(font36)
-    love.graphics.printf(titleText.title, 0, 100, width, "center")
-    love.graphics.setFont(font16)
-    love.graphics.printf(titleText.press, 0, 235, width, "center")
-    love.graphics.setFont(font14)
-    love.graphics.printf(titleText.instructions, 0, 300, width, "center")
-    love.graphics.setColor(255, 255, 255)
-  end
-  
-  if scoreText then
-    love.graphics.setColor(scoreText.color)
-    love.graphics.setFont(font16)
-    love.graphics.printf(scoreText.message, 0, 150, width, "center")
-    love.graphics.setFont(font28)
-    love.graphics.printf(scoreText.distance, 0, 175, width, "center")
-    love.graphics.setFont(font14)
-    love.graphics.printf(scoreText.press, 0, 450, width, "center")
-    love.graphics.setColor(255, 255, 255)
-  end
-  
-  if pauseText then
-    love.graphics.setColor(pauseText.color)
-    love.graphics.setFont(font28)
-    love.graphics.printf(pauseText.message, 0, 175, width, "center")
-    love.graphics.setFont(font14)
-    love.graphics.printf(pauseText.press, 0, 215, width, "center")
-    love.graphics.setColor(255, 255, 255)
-  end
-  
-  love.graphics.setFont(font16)
-  love.graphics.setColor(255, 255, 255, uiAlpha)
-  love.graphics.printf(tostring(math.floor(ship.distance / meter)) .. "m", 0, 5, width + 5, "right")
-  love.graphics.setColor(255, 255, 255)
+  text.draw()
   
   if flashAlpha then
     love.graphics.setColor(255, 255, 255, flashAlpha)
@@ -185,25 +152,15 @@ end
 
 function changeState(to)
   if state == "pre-title" and to == "title" then
-    titleText = {
-      title = "Facilitated\nEscape",
-      press = "Press space to start",
-      instructions = "The facility is crumbling!\nEscape, you must!\n\nAvoid incoming blocks.\nLeft/right arrows to steer.\nM to mute music.\nP to pause.\nEscape to quit.",
-      color = { 255, 255, 255, 0 }
-    }
-    
     state = "title"
     camera.follow = true
-    tween(0.25, titleText.color, { [4] = 255 })
+    text.activate("title")
   elseif state == "title" and to == "game" then
     state = "game"
     sound.engine()
     shipTweens()
-    tween(0.25, titleText.color, { [4] = 0 }, nil, function() titleText = nil end)
-    
-    -- tween in UI
-    uiAlpha = 0
-    tween(0.25, _G, { uiAlpha = 255 })
+    text.deactivate("title")
+    text.activate("ui")
     
     -- start rumbling
     cron.every(3, function()
@@ -215,34 +172,21 @@ function changeState(to)
   elseif state == "score" and to == "game" then
     state = "game"    
     ship.reset()
-    sound.engine()
     camera.y = ship.y + ship.height / 2 - height / 1.2
     background.reset()
     blocks.reset()
+    sound.engine()
     shipTweens()
-    tween(0.25, _G, { uiAlpha = 255 })
-    if scoreText then tween(0.25, scoreText.color, { [4] = 0 }, nil, function() scoreText = nil end) end
+    text.deactivate("score")
+    text.activate("ui")
   elseif state == "game" and to == "score" then
-    scoreText = {
-      message = "You travelled",
-      distance = tostring(math.floor(ship.distance / meter)) .. " meters",
-      press = "Press space to play again",
-      color = { 255, 255, 255, 0 }
-    }
-    
     state = "score"
-    tween(0.25, scoreText.color, { [4] = 255 })
-    tween(0.25, _G, { uiAlpha = 0 })
+    text.deactivate("ui")
+    text.activate("score")
   elseif state == "game" and to == "pause" then
-    pauseText = {
-      message = "Paused",
-      press = "Press space or P to continue",
-      color = { 255, 255, 255, 0 }
-    }
-    
     state = "pause"
-    tween(0.25, pauseText.color, { [4] = 255 })
-    tween(0.25, _G, { uiAlpha = 0 })
+    text.deactivate("ui")
+    text.activate("pause")
     sound.muteMusic(true)
     sound.muteBackground()
     sound.engine()
@@ -251,11 +195,8 @@ function changeState(to)
     if not suserMuted then sound.muteMusic() end
     sound.muteBackground()
     sound.engine()
-    tween(0.25, _G, { uiAlpha = 255 })
-    
-    if pauseText then
-      tween(0.25, pauseText.color, { [4] = 0 }, nil, function() pauseText = nil end)
-    end
+    text.deactivate("pause")
+    text.activate("ui")
   end
 end
 

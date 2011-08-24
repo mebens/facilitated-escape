@@ -1,3 +1,5 @@
+-- Module to handle the manage and draw the game's text
+
 text = {}
 
 text.title = {
@@ -10,7 +12,7 @@ text.title = {
 
 text.score = {
   message = "You travelled",
-  distance = "%d meters",
+  distanceFormat = "%d meters",
   press = "Press space to play again",
   active = false,
   color = { 255, 255, 255, 0 }
@@ -46,7 +48,7 @@ function text.draw()
     love.graphics.setFont(font16)
     love.graphics.printf(text.score.message, 0, 150, width, "center")
     love.graphics.setFont(font28)
-    love.graphics.printf(text.score.distance:format(math.floor(ship.distance / meter)), 0, 175, width, "center")
+    love.graphics.printf(text.score.distance, 0, 175, width, "center")
     love.graphics.setFont(font14)
     love.graphics.printf(text.score.press, 0, 450, width, "center")
     love.graphics.setColor(255, 255, 255)
@@ -73,6 +75,10 @@ function text.activate(name)
   assert(text[name], "A text set by the name '" .. name .. "' doesn't exist.")
   text[name].active = true
   tween(0.25, text[name].color, { [4] = 255 })
+  
+  if name == "score" then
+    text.score.distance = text.score.distanceFormat:format(math.floor(ship.distance / meter))
+  end
 end
 
 function text.deactivate(name)
