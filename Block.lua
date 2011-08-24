@@ -41,7 +41,7 @@ function Block:new(x, y, width, height, collidable)
     for i = 1, math.random(0, math.ceil(t.xTiles * t.yTiles / 8)) do
       local length = math.random(1, 5)
       local dir = math.random(0, 1) == 0 and "x" or "y"
-      local type = math.random(1, 40)
+      local type = math.random(1, 30)
       
       if type <= 5 then
         type = type + 3

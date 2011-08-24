@@ -22,7 +22,7 @@ end
 function blocks.reset()
   list.clear(blocks.front)
   list.clear(blocks.middle)
-  blocks.front.add(Block:new(-tileSize, ship.y + ship.height, width + tileSize, 200, false))
+  blocks.front.add(Block:new(-tileSize, ship.y + ship.height, width + tileSize, 50, false))
   blocks.front.generate()
   blocks.middle.generate()
 end

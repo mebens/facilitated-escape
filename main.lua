@@ -110,10 +110,6 @@ function love.draw()
   background.draw()
   camera.unset()
   
-  --[[love.graphics.setColor(0, 0, 0, 75)
-  love.graphics.rectangle("fill", 0, 0, width, height)
-  love.graphics.setColor(255, 255, 255)]]
-  
   camera.set(blocks.middle.cameraScale)
   blocks.middle.draw()
   camera.unset()
