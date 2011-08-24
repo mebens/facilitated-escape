@@ -3,6 +3,7 @@
 -- title screen
 -- change middle ground blocks to be less in the shape of foreground blocks?
 -- score tracking of some sort
+-- implement tiles using SpriteBatches
 -- enhance sound effects and music?
 -- shootable obstables?
 
