@@ -1,8 +1,10 @@
 -- TODO
--- more tiles and layers
--- possibly update sound effects and music
--- shootable obstables
--- score tracking
+-- make bright colours on tiles less "striking"
+-- title screen
+-- change middle ground blocks to be less in the shape of foreground blocks?
+-- score tracking of some sort
+-- enhance sound effects and music?
+-- shootable obstables?
 
 function love.load()
   -- setup random numbers
