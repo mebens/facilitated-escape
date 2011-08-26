@@ -1,7 +1,8 @@
 -- TODO
 -- make bright colours on tiles less "striking"
 -- title screen
--- change middle ground blocks to be less in the shape of foreground blocks?
+-- particle system effects on block, like steam, fire, etc.
+-- change blocks around ship impact to look damaged?
 -- score tracking of some sort
 -- implement tiles using SpriteBatches
 -- enhance sound effects and music?
@@ -19,12 +20,158 @@ function love.load()
   height = love.graphics.getHeight()
   tileSize = 24
   meter = 12
-  state = "pre-title" -- "pre-title", "title", "game", "pause", or "score"
-  userMuted = false
-  rumbleTimer = 0
+  state = "title" -- "title", "game", "pause", or "score"
+  muted = false
+  blackAlpha = 0
   math.tau = math.pi * 2
   
-  -- resources
+  -- loading
+  loadResources()
+  tween = require("lib.tween")
+  cron = require("lib.cron")
+  require("modules.list")
+  require("modules.text")
+  require("modules.camera")
+  require("modules.title")
+  
+  -- setup scene
+  title.init()
+end
+
+function love.update(dt)  
+  -- how on earth we get dt = 0 I don't know
+  if dt > 0 then
+    tween.update(dt)
+    cron.update(dt)
+  end
+  
+  if state == "game" or state == "score" then
+    if state ~= "score" then blocks.update(dt) end
+    ship.update(dt)
+    background.update(dt)
+    camera.update(dt)
+  elseif state == "title" then
+    title.update(dt)
+  end
+end
+
+function love.draw()
+  if state == "title" then
+    title.draw()
+  else
+    camera.set(background.cameraScale)
+    background.draw()
+    camera.unset()
+  
+    camera.set(blocks.middle.cameraScale)
+    blocks.middle.draw()
+    camera.unset()
+  
+    camera.set()
+    blocks.front.draw()
+    ship.draw()
+    camera.unset()
+  
+    text.draw()
+  end
+  
+  if blackAlpha ~= 0 then
+    love.graphics.setColor(0, 0, 0, blackAlpha)
+    love.graphics.rectangle("fill", 0, 0, width, height)
+    love.graphics.setColor(255, 255, 255)
+  end
+end
+
+function love.keypressed(key, unicode)
+  if key == " " and state ~= "game" then
+    if state == "pause" then
+      changeState("game")
+    else
+      fadeChangeState("game")
+    end
+  elseif key == "m" and state ~= "pause" then
+    muted = not muted
+    
+    if muted then
+      music.game:pause()
+    else
+      music.game:resume()
+    end
+  elseif key == "p" then
+    if state == "pause" then
+      changeState("game")
+    else
+      changeState("pause")
+    end
+  elseif key == "escape" then
+    love.event.push("q")
+  end
+end
+
+function love.focus(f)
+  if not f then changeState("pause") end
+end
+
+function changeState(to)
+  if state == "title" and to == "game" then
+    require("modules.ship")
+    require("modules.background")
+    require("modules.blocks")
+    require("modules.sound")
+    require("classes.Block")
+    require("classes.MidBlock")
+    
+    state = "game"
+    blocks.reset()
+    sound.processRumbles()
+    sfx.engine:play()
+    shipTweens()
+    text.activate("ui", true)
+    
+    -- start rumbling
+    cron.every(3, function()
+      if state == "game" and math.random(1, 6) == 1 then
+        camera.shake(4)
+        sfx.rumble:play()
+      end
+    end)
+  elseif state == "score" and to == "game" then
+    state = "game"    
+    ship.reset()
+    camera.y = ship.y + ship.height / 2 - height / 1.2
+    camera.follow = true
+    background.reset()
+    blocks.reset()
+    sfx.engine:play()
+    shipTweens()
+    text.deactivate("score", true)
+    text.activate("ui", true)
+  elseif state == "game" and to == "score" then
+    state = "score"
+    text.deactivate("ui")
+    text.activate("score")
+    sfx.death:play()
+    sfx.engine:stop()
+    camera.follow = false
+    tween(0.5, camera, { y = camera.y - 20 }, "outExpo")
+  elseif state == "game" and to == "pause" then
+    state = "pause"
+    text.deactivate("ui")
+    text.activate("pause")
+    music.game:pause()
+    sfx.background:stop()
+    sfx.engine:stop()
+  elseif state == "pause" and to == "game" then
+    state = "game"
+    if not muted then music.game:resume() end
+    sfx.background:play()
+    sfx.engine:play()
+    text.deactivate("pause")
+    text.activate("ui")
+  end
+end
+
+function loadResources()
   fonts = {
     [14] = love.graphics.newFont("fonts/uni05.ttf", 14),
     [16] = love.graphics.newFont("fonts/uni05.ttf", 16),
@@ -32,9 +179,15 @@ function love.load()
     [36] = love.graphics.newFont("fonts/uni05.ttf", 36)
   }
 
-  particle = love.graphics.newImage("images/particle.png")
+  images = {
+    particle = love.graphics.newImage("images/particle.png"),
+    facility = love.graphics.newImage("images/facility.png")
+  }
+    
   tiles = love.graphics.newImage("images/tiles.png")
   tiles:setFilter("nearest", "nearest") -- makes it pixelated, not blurry
+  images.facility:setFilter("nearest", "nearest")
+  
   local tw = tiles:getWidth()
   local th = tiles:getHeight()
   
@@ -70,139 +223,30 @@ function love.load()
     love.graphics.newQuad(65, 26, 12, 12, tw, th)
   }
   
-  -- files
-  tween = require("lib.tween")
-  cron = require("lib.cron")
-  require("modules.list")
-  require("modules.text")
-  require("modules.ship")
-  require("modules.camera")
-  require("modules.background")
-  require("modules.blocks")
-  require("modules.sound")
-  require("classes.Block")
-  require("classes.MidBlock")
+  sfx = {
+    rumble = love.audio.newSource("sounds/rumble.ogg", "static"),
+    engine = love.audio.newSource("sounds/engine.ogg", "static"),
+    death = love.audio.newSource("sounds/death.ogg", "static"),
+    background = love.audio.newSource("sounds/background.ogg", "static"),
+    smallRumble = love.sound.newSoundData("sounds/small-rumble.ogg"),
+    smallRumble2 = love.sound.newSoundData("sounds/small-rumble2.ogg")
+  }
   
-  -- world setup
-  blocks.reset()
-  cron.after(1, changeState, "title")
-  flashAlpha = 0
+  sfx.rumble:setVolume(0.5)
+  sfx.engine:setLooping(true)
+  sfx.engine:setVolume(0.2)
+  sfx.death:setVolume(0.5)
+  sfx.background:setLooping(true)
+  sfx.background:setVolume(0.3)
+  sfx.background:play()
   
-  tween(0.1, _G, { flashAlpha = 255 }, nil, function()
-    tween(1.15, _G, { flashAlpha = 0 }, nil, function() flashAlpha = nil end)
-    camera.shake(10)
-    sound.rumble()
-  end)
-end
-
-function love.update(dt)
-  if state ~= "pause" then
-    background.update(dt)
-    camera.update(dt)
-  end
-
-  -- how on earth we get dt = 0 I don't know
-  if dt > 0 then
-    tween.update(dt)
-    cron.update(dt)
-  end
-    
-  if state == "game" or state == "score" then ship.update(dt) end
-  if state == "game" then blocks.update(dt) end
-end
-
-function love.draw()
-  camera.set(background.cameraScale)
-  background.draw()
-  camera.unset()
+  music = {
+    game = love.audio.newSource("sounds/music.ogg", "stream")
+  }
   
-  camera.set(blocks.middle.cameraScale)
-  blocks.middle.draw()
-  camera.unset()
-  
-  camera.set()
-  blocks.front.draw()
-  ship.draw()
-  camera.unset()
-  
-  text.draw()
-  
-  if flashAlpha then
-    love.graphics.setColor(255, 255, 255, flashAlpha)
-    love.graphics.rectangle("fill", 0, 0, width, height)
-    love.graphics.setColor(255, 255, 255)
-  end
-end
-
-function love.keypressed(key, unicode)
-  if key == " " and state ~= "pre-title" and state ~= "game" then
-    changeState("game")
-  elseif key == "m" and state ~= "pause" then
-    userMuted = not userMuted
-    sound.muteMusic()
-  elseif key == "p" then
-    if state == "pause" then
-      changeState("game")
-    else
-      changeState("pause")
-    end
-  elseif key == "escape" then
-    love.event.push("q")
-  end
-end
-
-function love.focus(f)
-  if not f then changeState("pause") end
-end
-
-function changeState(to)
-  if state == "pre-title" and to == "title" then
-    state = "title"
-    camera.follow = true
-    text.activate("title")
-  elseif state == "title" and to == "game" then
-    state = "game"
-    sound.engine()
-    shipTweens()
-    text.deactivate("title")
-    text.activate("ui")
-    
-    -- start rumbling
-    cron.every(3, function()
-      if state == "game" and math.random(1, 6) == 1 then
-        camera.shake(4)
-        sound.rumble()
-      end
-    end)
-  elseif state == "score" and to == "game" then
-    state = "game"    
-    ship.reset()
-    camera.y = ship.y + ship.height / 2 - height / 1.2
-    background.reset()
-    blocks.reset()
-    sound.engine()
-    shipTweens()
-    text.deactivate("score")
-    text.activate("ui")
-  elseif state == "game" and to == "score" then
-    state = "score"
-    text.deactivate("ui")
-    text.activate("score")
-  elseif state == "game" and to == "pause" then
-    state = "pause"
-    text.deactivate("ui")
-    text.activate("pause")
-    sound.muteMusic(true)
-    sound.muteBackground()
-    sound.engine()
-  elseif state == "pause" and to == "game" then
-    state = "game"
-    if not suserMuted then sound.muteMusic() end
-    sound.muteBackground()
-    sound.engine()
-    text.deactivate("pause")
-    text.activate("ui")
-  end
+  music.game:setLooping(true)
+  music.game:setVolume(0.15) -- I can't stop the music file from being incredibly loud for some reason
+  music.game:play()
 end
 
 function newFramebuffer(width, height)
@@ -226,4 +270,11 @@ function shipTweens()
   ship.ySpeed = 0
   tween(1, ship, { ySpeed = ySpeed })
   tween(1, ship, { fireSpeed = 400 })
+end
+
+function fadeChangeState(to)
+  tween(0.15, _G, { blackAlpha = 255 }, nil, function()
+    changeState(to)
+    tween(0.15, _G, { blackAlpha = 0 })
+  end)
 end

@@ -2,16 +2,13 @@
 
 camera = {}
 camera.x = 0
-camera.y = ship.y + ship.height / 2 - height / 1.12
-camera.follow = false
+camera.y = 0
+camera.follow = true
 camera.speed = 10
 camera.shakeFactor = 0
 
 function camera.update(dt)
-  if camera.follow then
-    -- only way I know of eliminating jitters from the ship
-    camera.y = camera.y - (camera.y - (ship.y + ship.height / 2 - height / 1.12)) * dt * camera.speed
-  end
+  if camera.follow then camera.y = ship.y + ship.height / 2 - height / 1.18 end
 end
 
 function camera.set(factor)

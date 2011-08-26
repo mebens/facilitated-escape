@@ -8,7 +8,7 @@ ship.yIncrease = 10
 ship.image = love.graphics.newImage("images/ship.png")
 ship.image:setFilter("nearest", "nearest")
 
-local ps = love.graphics.newParticleSystem(particle, 1000)
+local ps = love.graphics.newParticleSystem(images.particle, 1000)
 ps:setEmissionRate(10000)
 ps:setLifetime(0.1)
 ps:setParticleLife(0.2, 0.5)
@@ -19,7 +19,7 @@ ps:setColor(238, 88, 38, 255, 230, 60, 27, 0)
 ps:stop()
 ship.explosion = ps
 
-ps = love.graphics.newParticleSystem(particle, 500)
+ps = love.graphics.newParticleSystem(images.particle, 500)
 ps:setEmissionRate(250)
 ps:setLifetime(1)
 ps:setParticleLife(4, 5)
@@ -30,7 +30,7 @@ ps:setColor(195, 195, 195, 255, 155, 155, 155, 0)
 ps:stop()
 ship.smoke = ps
 
-ps = love.graphics.newParticleSystem(particle, 1000)
+ps = love.graphics.newParticleSystem(images.particle, 1000)
 ps:setEmissionRate(100)
 ps:setParticleLife(0.2, 0.5)
 ps:setSize(1, 3)
@@ -93,8 +93,6 @@ function ship.collide()
   ship.fire:stop()
   ship.smokeFactor = 10
   cron.after(0.1, function() tween(0.25, ship, { smokeFactor = 1 }) end)
-  sound.death()
-  sound.engine()
   changeState("score")
 end
 

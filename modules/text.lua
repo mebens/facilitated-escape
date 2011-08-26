@@ -71,17 +71,27 @@ function text.draw()
   end
 end
 
-function text.activate(name)
+function text.activate(name, notFade)
   assert(text[name], "A text set by the name '" .. name .. "' doesn't exist.")
   text[name].active = true
-  tween(0.25, text[name].color, { [4] = 255 })
+  
+  if notFade then
+    text[name].color[4] = 255
+  else
+    tween(0.25, text[name].color, { [4] = 255 })
+  end
   
   if name == "score" then
     text.score.distance = text.score.distanceFormat:format(math.floor(ship.distance / meter))
   end
 end
 
-function text.deactivate(name)
+function text.deactivate(name, notFade)
   assert(text[name], "A text set by the name '" .. name .. "' doesn't exist.")
-  tween(0.25, text[name].color, { [4] = 0 }, nil, function() text[name].active = false end)
+  if notFade then
+    text[name].color[4] = 0
+    text[name].active = false
+  else
+    tween(0.25, text[name].color, { [4] = 0 }, nil, function() text[name].active = false end)
+  end
 end
