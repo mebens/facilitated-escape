@@ -16,7 +16,7 @@ function Block:new(x, y, width, height, collidable)
   t.width = tileSize * t.xTiles
   t.height = tileSize * t.yTiles
   t.smokes = {}
-  t.image = love.graphics.newSpriteBatch(tiles, math.floor(t.width * t.height * 3))
+  t.image = love.graphics.newSpriteBatch(tiles, math.floor(t.xTiles * t.yTiles * 3))
   
   -- base and corners
   for x = 0, t.xTiles - 1 do
