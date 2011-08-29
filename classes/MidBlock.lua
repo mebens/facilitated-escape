@@ -11,7 +11,7 @@ function MidBlock:new(x, y, size)
   }, MidBlock)
   
   t.size = t.tiles * tileSize
-  t.image = love.graphics.newSpriteBatch(tiles, t.size * t.size)
+  t.image = love.graphics.newSpriteBatch(tiles, t.tiles * t.tiles)
   
   for x = 0, t.tiles - 1 do
     for y = 0, t.tiles - 1 do
