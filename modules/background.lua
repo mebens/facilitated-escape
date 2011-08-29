@@ -8,20 +8,31 @@ background.width = background.xTiles * tileSize
 background.height = background.yTiles * tileSize
 background.base = love.graphics.newSpriteBatch(tiles, background.xTiles * background.yTiles)
 
+do
+  local camY = camera.y * background.cameraScale
+  
+  background.buffer = {
+    y = camY - background.height - 15,
+    image = love.graphics.newSpriteBatch(tiles, background.xTiles * background.yTiles)
+  }
+  
+  background.buffer2 = {
+    y = camY - 15,
+    image = love.graphics.newSpriteBatch(tiles, background.xTiles * background.yTiles)
+  }
+end
+
 for x = 0, background.xTiles - 1 do
   for y = 0, background.yTiles - 1 do
     background.base:addq(quads[26], x * tileSize, y * tileSize, 0, 2)
   end
 end
 
-local function newBuffer()
-  local batch = love.graphics.newSpriteBatch(tiles, background.xTiles * background.yTiles)
+local function swapBuffers()
   local camY = camera.y * background.cameraScale
-  background.buffer2 = background.buffer
-  background.buffer = {
-    image = batch,
-    y = camY - background.height - (camY - (background.lastCameraY or camY)) - 15
-  }
+  background.buffer, background.buffer2 = background.buffer2, background.buffer
+  background.buffer.y = camY - background.height - (camY - (background.lastCameraY or camY)) - 15
+  background.buffer.image:clear()
   
   for i = 1, math.random(2, 10) do
     local length = math.random(1, 5)
@@ -32,29 +43,28 @@ local function newBuffer()
       local y = math.random(0, background.yTiles - 1) * tileSize
       
       for x = xPos, xPos + length do
-        batch:addq(quads[type], x * tileSize, y, 0, 2)
+        background.buffer.image:addq(quads[type], x * tileSize, y, 0, 2)
       end
     else
       local x = math.random(0, background.xTiles - 1) * tileSize
       local yPos = math.random(0, background.yTiles - 1 - length)
       
       for y = yPos, yPos + length do
-        batch:addq(quads[type], x, y * tileSize, 0, 2)
+        background.buffer.image:addq(quads[type], x, y * tileSize, 0, 2)
       end
     end
   end
 end
 
 function background.reset()
-  background.buffer = nil
-  newBuffer()
-  background.buffer.y = camera.y - 15
-  newBuffer()
-  background.buffer.y = camera.y - background.height - 15
+  swapBuffers()
+  swapBuffers()
+  background.buffer.y = camera.y * background.cameraScale - background.height - 15
+  background.buffer2.y = camera.y * background.cameraScale - 15
 end
 
 function background.update(dt)
-  if background.buffer.y >= camera.y * background.cameraScale - 15 then newBuffer() end
+  if background.buffer.y >= camera.y * background.cameraScale - 15 then swapBuffers() end
   background.lastCameraY = camera.y * background.cameraScale
 end
 

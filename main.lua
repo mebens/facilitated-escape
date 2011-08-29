@@ -1,3 +1,7 @@
+-- TODO
+-- Implement two SpriteBatches per layer to improve performance
+-- Allow nugding sides of blocks. Maybe make the game easier in other ways.
+
 function love.load()
   -- setup random numbers
   math.randomseed(os.time())
