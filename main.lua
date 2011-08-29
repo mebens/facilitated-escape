@@ -1,6 +1,3 @@
--- TODO
--- enhance sound effects and music?
-
 function love.load()
   -- setup random numbers
   math.randomseed(os.time())
