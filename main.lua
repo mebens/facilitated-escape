@@ -1,5 +1,4 @@
 -- TODO
--- implement tiles using SpriteBatches
 -- enhance sound effects and music?
 
 function love.load()
@@ -260,22 +259,6 @@ function loadResources()
   music.game:setLooping(true)
   music.game:setVolume(0.15) -- I can't stop the music file from being incredibly loud for some reason
   music.game:play()
-end
-
-function newFramebuffer(width, height)
-  local ok, fb = pcall(love.graphics.newFramebuffer, width, height)
-  
-  if not ok then
-    ok, fb = pcall(
-      love.graphics.newFramebuffer,
-      math.ceil(math.log(width) / math.log(2)) ^ 2,
-      math.ceil(math.log(height) / math.log(2)) ^ 2
-    )
-    
-    if not ok then error("Your computer doesn't support framebuffers") end
-  end
-  
-  return fb
 end
 
 function shipTweens()

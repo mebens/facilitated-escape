@@ -15,85 +15,82 @@ function Block:new(x, y, width, height, collidable)
   if collidable == nil then t.collidable = true end
   t.width = tileSize * t.xTiles
   t.height = tileSize * t.yTiles
-  t.image = newFramebuffer(t.width, t.height)
   t.smokes = {}
+  t.image = love.graphics.newSpriteBatch(tiles, math.floor(t.width * t.height * 3))
   
-  t.image:renderTo(function()
-    -- base and corners
-    for x = 0, t.xTiles - 1 do
-      for y = 0, t.yTiles - 1 do
-        local quad = quads[11]
-        
-        if x == 0 and y == 0 then
-          quad = quads[12]
-        elseif x == 0 and y == t.yTiles - 1 then
-          quad = quads[14]
-        elseif x == t.xTiles - 1 and y == 0 then
-          quad = quads[13]
-        elseif x == t.xTiles - 1 and y == t.yTiles - 1 then
-          quad = quads[15]
-        elseif (x == 0 or x == t.xTiles - 1) and math.random(1, 80) == 1 then
-          t.smokes[#t.smokes + 1] = { x = x, y = y, system = t:generateSmoke(x, y) }
-          quad = nil
-        end
-        
-        if quad then love.graphics.drawq(tiles, quad, x * tileSize, y * tileSize, 0, 2) end
-      end
-    end
-    
-    -- special tiles
-    for i = 1, math.random(0, math.ceil(t.xTiles * t.yTiles / 8)) do
-      local length = math.random(1, 5)
-      local dir = math.random(0, 1) == 0 and "x" or "y"
-      local type = math.random(1, 30)
+  -- base and corners
+  for x = 0, t.xTiles - 1 do
+    for y = 0, t.yTiles - 1 do
+      local quad = quads[11]
       
-      if type <= 5 then
-        type = type + 3
-      else
-        type = math.random(1, 3)
+      if x == 0 and y == 0 then
+        quad = quads[12]
+      elseif x == 0 and y == t.yTiles - 1 then
+        quad = quads[14]
+      elseif x == t.xTiles - 1 and y == 0 then
+        quad = quads[13]
+      elseif x == t.xTiles - 1 and y == t.yTiles - 1 then
+        quad = quads[15]
+      elseif (x == 0 or x == t.xTiles - 1) and math.random(1, 80) == 1 then
+        t.smokes[#t.smokes + 1] = { x = x, y = y, system = t:generateSmoke(x, y) }
+        quad = nil
       end
       
-      if dir == "x" then
-        length = math.min(length, t.xTiles)
-        local xMax = t.xTiles - 1 - length
-        local xPos = xMax > 0 and math.random(0, xMax) or 0
-        local y = math.random(0, t.yTiles - 1)
+      if quad then t.image:addq(quad, x * tileSize, y * tileSize, 0, 2) end
+    end
+  end
+  
+  -- special tiles
+  for i = 1, math.random(0, math.ceil(t.xTiles * t.yTiles / 8)) do
+    local length = math.random(1, 5)
+    local type = math.random(1, 30)
+    
+    if type <= 5 then
+      type = type + 3
+    else
+      type = math.random(1, 3)
+    end
+    
+    if math.random(0, 1) == 0 then
+      length = math.min(length, t.xTiles)
+      local xMax = t.xTiles - 1 - length
+      local xPos = xMax > 0 and math.random(0, xMax) or 0
+      local y = math.random(0, t.yTiles - 1)
+      
+      for x = xPos, xPos + length do
+        if x >= t.xTiles then break end
         
-        for x = xPos, xPos + length do
-          if x >= t.xTiles then break end
-          
-          -- if not on one of the corners
-          if not ((x == 0 and y == 0)
-          or (x == 0 and y == t.yTiles - 1)
-          or (x == t.xTiles - 1 and y == 0)
-          or (x == t.xTiles - 1 and y == t.yTiles - 1)) then
-            love.graphics.drawq(tiles, quads[type], x * tileSize, y * tileSize, 0, 2)
-          end
+        -- if not on one of the corners
+        if not ((x == 0 and y == 0)
+        or (x == 0 and y == t.yTiles - 1)
+        or (x == t.xTiles - 1 and y == 0)
+        or (x == t.xTiles - 1 and y == t.yTiles - 1)) then
+          t.image:addq(quads[type], x * tileSize, y * tileSize, 0, 2)
         end
-      else
-        length = math.min(length, t.yTiles)
-        local x = math.random(0, t.xTiles - 1)
-        local yMax = t.yTiles - 1 - length
-        local yPos = yMax > 0 and math.random(0, yMax) or 0
+      end
+    else
+      length = math.min(length, t.yTiles)
+      local x = math.random(0, t.xTiles - 1)
+      local yMax = t.yTiles - 1 - length
+      local yPos = yMax > 0 and math.random(0, yMax) or 0
+      
+      for y = yPos, yPos + length do
+        if y >= t.yTiles then break end
         
-        for y = yPos, yPos + length do
-          if y >= t.yTiles then break end
-          
-          if not ((x == 0 and y == 0)
-          or (x == 0 and y == t.yTiles - 1)
-          or (x == t.xTiles - 1 and y == 0)
-          or (x == t.xTiles - 1 and y == t.yTiles - 1)) then
-            love.graphics.drawq(tiles, quads[type], x * tileSize, y * tileSize, 0, 2)
-          end
+        if not ((x == 0 and y == 0)
+        or (x == 0 and y == t.yTiles - 1)
+        or (x == t.xTiles - 1 and y == 0)
+        or (x == t.xTiles - 1 and y == t.yTiles - 1)) then
+          t.image:addq(quads[type], x * tileSize, y * tileSize, 0, 2)
         end
       end
     end
-    
-    -- smoke tiles
-    for _, v in pairs(t.smokes) do
-      love.graphics.drawq(tiles, quads[v.x == 0 and 10 or 9], v.x * tileSize, v.y * tileSize, 0, 2)
-    end
-  end)
+  end
+  
+  -- smoke tiles
+  for _, v in pairs(t.smokes) do
+    t.image:addq(quads[v.x == 0 and 10 or 9], v.x * tileSize, v.y * tileSize, 0, 2)
+  end
   
   return t
 end
