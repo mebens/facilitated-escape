@@ -11,7 +11,7 @@ background.base = newFramebuffer(background.width, background.height)
 background.base:renderTo(function()
   for x = 0, background.xTiles - 1 do
     for y = 0, background.yTiles - 1 do
-      love.graphics.drawq(tiles, quads[24], x * tileSize, y * tileSize, 0, 2)
+      love.graphics.drawq(tiles, quads[26], x * tileSize, y * tileSize, 0, 2)
     end
   end
 end)
@@ -32,7 +32,7 @@ local function newBuffer()
     for i = 1, specials do
       local length = math.random(1, 5)
       local dir = math.random(0, 1) == 0 and "x" or "y"
-      local type = math.random(20, 23)
+      local type = math.random(22, 25)
       
       if dir == "x" then
         local xPos = math.random(0, background.xTiles - 1 - length)
@@ -75,5 +75,3 @@ function background.draw()
     love.graphics.draw(background.buffer2.image, 0, background.buffer2.y)
   end
 end
-
-background.reset()

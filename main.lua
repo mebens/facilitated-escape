@@ -1,19 +1,13 @@
 -- TODO
--- make bright colours on tiles less "striking"
--- title screen
--- particle system effects on block, like steam, fire, etc.
--- change blocks around ship impact to look damaged?
--- score tracking of some sort
 -- implement tiles using SpriteBatches
 -- enhance sound effects and music?
--- shootable obstables?
 
 function love.load()
   -- setup random numbers
   math.randomseed(os.time())
   math.random()
   math.random()
-  math.random()
+  math.random()  
   
   -- globals/variables
   width = love.graphics.getWidth()
@@ -21,8 +15,10 @@ function love.load()
   tileSize = 24
   meter = 12
   state = "title" -- "title", "game", "pause", or "score"
+  tutorial = false
   muted = false
   blackAlpha = 0
+  dtFactor = 1
   math.tau = math.pi * 2
   
   -- loading
@@ -32,48 +28,56 @@ function love.load()
   require("modules.list")
   require("modules.text")
   require("modules.camera")
-  require("modules.title")
+  require("modules.background")
+  require("modules.blocks")
+  require("modules.sound")
+  require("modules.data")
+  require("classes.Block")
+  require("classes.MidBlock")
   
-  -- setup scene
-  title.init()
+  -- setup
+  data.init()
+  background.reset()
+  blocks.reset()
+  sound.processRumbles()
+  text.activate("title")
 end
 
-function love.update(dt)  
+function love.update(dt)
+  dt = dt * dtFactor
+  
   -- how on earth we get dt = 0 I don't know
   if dt > 0 then
     tween.update(dt)
     cron.update(dt)
   end
   
-  if state == "game" or state == "score" then
-    if state ~= "score" then blocks.update(dt) end
-    ship.update(dt)
-    background.update(dt)
+  if state ~= "pause" then
     camera.update(dt)
-  elseif state == "title" then
-    title.update(dt)
+    background.update(dt)
+    blocks.update(dt)
+    if tutorial and tutorial.active then tutorial.update(dt) end
+    if state == "game" or state == "score" then ship.update(dt) end
   end
 end
 
 function love.draw()
-  if state == "title" then
-    title.draw()
-  else
-    camera.set(background.cameraScale)
-    background.draw()
-    camera.unset()
-  
-    camera.set(blocks.middle.cameraScale)
-    blocks.middle.draw()
-    camera.unset()
-  
-    camera.set()
-    blocks.front.draw()
-    ship.draw()
-    camera.unset()
-  
-    text.draw()
-  end
+  camera.set(background.cameraScale)
+  background.draw()
+  camera.unset()
+
+  camera.set(blocks.middle.cameraScale)
+  blocks.middle.draw()
+  camera.unset()
+
+  camera.set()
+  if tutorial and tutorial.active then tutorial.draw() end
+  if state == "game" then ship.draw() end
+  blocks.front.draw()
+  if state ~= "game" and state ~= "title" then ship.draw() end
+  camera.unset()
+
+  text.draw()
   
   if blackAlpha ~= 0 then
     love.graphics.setColor(0, 0, 0, blackAlpha)
@@ -112,21 +116,28 @@ function love.focus(f)
   if not f then changeState("pause") end
 end
 
+function love.quit()
+  love.audio.stop()
+  if state ~= "title" then data.send() end
+end
+
 function changeState(to)
   if state == "title" and to == "game" then
     require("modules.ship")
-    require("modules.background")
-    require("modules.blocks")
-    require("modules.sound")
-    require("classes.Block")
-    require("classes.MidBlock")
+    
+    if data.first then
+      require("modules.tutorial")
+      tutorial.init()
+    end
     
     state = "game"
+    camera.y = camera.generateY()
     blocks.reset()
-    sound.processRumbles()
+    background.reset()
     sfx.engine:play()
     shipTweens()
     text.activate("ui", true)
+    text.deactivate("title", true)
     
     -- start rumbling
     cron.every(3, function()
@@ -138,8 +149,8 @@ function changeState(to)
   elseif state == "score" and to == "game" then
     state = "game"    
     ship.reset()
-    camera.y = ship.y + ship.height / 2 - height / 1.2
-    camera.follow = true
+    tween.stop(camera.endTween)
+    camera.y = camera.generateY()
     background.reset()
     blocks.reset()
     sfx.engine:play()
@@ -148,12 +159,12 @@ function changeState(to)
     text.activate("ui", true)
   elseif state == "game" and to == "score" then
     state = "score"
+    data.score(math.floor(ship.distance / meter))
     text.deactivate("ui")
     text.activate("score")
     sfx.death:play()
     sfx.engine:stop()
-    camera.follow = false
-    tween(0.5, camera, { y = camera.y - 20 }, "outExpo")
+    camera.endTween = tween(0.5, camera, { y = camera.y - 20 }, "outExpo")
   elseif state == "game" and to == "pause" then
     state = "pause"
     text.deactivate("ui")
@@ -173,7 +184,7 @@ end
 
 function loadResources()
   fonts = {
-    [14] = love.graphics.newFont("fonts/uni05.ttf", 14),
+    [12] = love.graphics.newFont("fonts/uni05.ttf", 12),
     [16] = love.graphics.newFont("fonts/uni05.ttf", 16),
     [28] = love.graphics.newFont("fonts/uni05.ttf", 28),
     [36] = love.graphics.newFont("fonts/uni05.ttf", 36)
@@ -206,21 +217,23 @@ function loadResources()
     love.graphics.newQuad(13, 13, 12, 12, tw, th),
     love.graphics.newQuad(26, 13, 12, 12, tw, th),
     love.graphics.newQuad(39, 13, 12, 12, tw, th),
-    
-    -- middleground
     love.graphics.newQuad(52, 13, 12, 12, tw, th),
     love.graphics.newQuad(65, 13, 12, 12, tw, th),
+    
+    -- middleground
     love.graphics.newQuad(78, 13, 12, 12, tw, th),
     love.graphics.newQuad(91, 13, 12, 12, tw, th),
     love.graphics.newQuad(104, 13, 12, 12, tw, th),
     love.graphics.newQuad(0, 26, 12, 12, tw, th),
-    
-     -- background
     love.graphics.newQuad(13, 26, 12, 12, tw, th),
     love.graphics.newQuad(26, 26, 12, 12, tw, th),
+    
+     -- background
     love.graphics.newQuad(39, 26, 12, 12, tw, th),
     love.graphics.newQuad(52, 26, 12, 12, tw, th),
-    love.graphics.newQuad(65, 26, 12, 12, tw, th)
+    love.graphics.newQuad(65, 26, 12, 12, tw, th),
+    love.graphics.newQuad(78, 26, 12, 12, tw, th),
+    love.graphics.newQuad(91, 26, 12, 12, tw, th)
   }
   
   sfx = {

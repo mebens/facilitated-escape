@@ -16,24 +16,28 @@ function Block:new(x, y, width, height, collidable)
   t.width = tileSize * t.xTiles
   t.height = tileSize * t.yTiles
   t.image = newFramebuffer(t.width, t.height)
+  t.smokes = {}
   
   t.image:renderTo(function()
     -- base and corners
     for x = 0, t.xTiles - 1 do
       for y = 0, t.yTiles - 1 do
-        local quad = quads[9]
+        local quad = quads[11]
         
         if x == 0 and y == 0 then
-          quad = quads[10]
-        elseif x == 0 and y == t.yTiles - 1 then
           quad = quads[12]
+        elseif x == 0 and y == t.yTiles - 1 then
+          quad = quads[14]
         elseif x == t.xTiles - 1 and y == 0 then
-          quad = quads[11]
-        elseif x == t.xTiles - 1 and y == t.yTiles - 1 then
           quad = quads[13]
+        elseif x == t.xTiles - 1 and y == t.yTiles - 1 then
+          quad = quads[15]
+        elseif (x == 0 or x == t.xTiles - 1) and math.random(1, 80) == 1 then
+          t.smokes[#t.smokes + 1] = { x = x, y = y, system = t:generateSmoke(x, y) }
+          quad = nil
         end
         
-        love.graphics.drawq(tiles, quad, x * tileSize, y * tileSize, 0, 2)
+        if quad then love.graphics.drawq(tiles, quad, x * tileSize, y * tileSize, 0, 2) end
       end
     end
     
@@ -84,22 +88,51 @@ function Block:new(x, y, width, height, collidable)
         end
       end
     end
+    
+    -- smoke tiles
+    for _, v in pairs(t.smokes) do
+      love.graphics.drawq(tiles, quads[v.x == 0 and 10 or 9], v.x * tileSize, v.y * tileSize, 0, 2)
+    end
   end)
   
   return t
 end
 
 function Block:update(dt)
-  if self.collidable
-  and ship.x + ship.width >= self.x and ship.x <= self.x + self.width
-  and ship.y + ship.height - 12 >= self.y and ship.y + 15 <= self.y + self.height
-  then
-    ship.collide()
+  if state == "game" then
+    if self.collidable
+    and ship.x + ship.width >= self.x and ship.x <= self.x + self.width
+    and ship.y + ship.height - 12 >= self.y and ship.y + 15 <= self.y + self.height
+    then
+        ship.collide()
+    end
+    
+    if self.y > camera.y + height then self.list.remove(self) end
   end
   
-  if self.y > camera.y + height then self.list.remove(self) end
+  for _, v in pairs(self.smokes) do v.system:update(dt) end
 end
 
 function Block:draw()
+  for _, v in pairs(self.smokes) do love.graphics.draw(v.system) end
   love.graphics.draw(self.image, self.x, self.y)
+end
+
+function Block:generateSmoke(x, y)
+  local ps = love.graphics.newParticleSystem(images.particle, 300)
+  ps:setEmissionRate(150)
+  ps:setParticleLife(0.25, 0.4)
+  ps:setSize(1, 2)
+  ps:setSpread(math.tau / 18)
+  ps:setSpeed(200, 300)
+  ps:setPosition(self.x + x * tileSize + tileSize / 2, self.y + y * tileSize + tileSize / 2)
+  ps:setDirection(math.tau / (x == 0 and 2 or 1))
+  
+  if math.random(1, 2) == 1 then
+    ps:setColor(100, 156, 121, 255, 97, 148, 107, 0)
+  else
+    ps:setColor(200, 200, 200, 255, 170, 170, 170, 0)
+  end
+  
+  return ps
 end

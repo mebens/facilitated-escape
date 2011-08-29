@@ -1,8 +1,9 @@
 function love.conf(t)
   t.title = "Facilitated Escape"
   t.author = "Michael Ebens"
-  t.version = 07
+  t.identity = t.title
   t.release = true
+  t.version = 07
   t.modules.joystick = false
   t.modules.physics = false
   t.screen.width = 400

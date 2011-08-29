@@ -22,9 +22,12 @@ end
 function blocks.reset()
   list.clear(blocks.front)
   list.clear(blocks.middle)
-  blocks.front.add(Block:new(-tileSize, ship.y + ship.height, width + tileSize, 50, false))
   blocks.front.generate()
   blocks.middle.generate()
+  
+  if state == "game" then
+    blocks.front.add(Block:new(-tileSize, ship.y + ship.height, width + tileSize, 50, false))
+  end
 end
 
 function blocks.front.draw()

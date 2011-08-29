@@ -3,12 +3,16 @@
 camera = {}
 camera.x = 0
 camera.y = 0
-camera.follow = true
 camera.speed = 10
 camera.shakeFactor = 0
+camera.titleSpeed = 200
 
 function camera.update(dt)
-  if camera.follow then camera.y = ship.y + ship.height / 2 - height / 1.18 end
+  if state == "game" then
+    camera.y = camera.y - (camera.y - (camera.generateY())) * dt * camera.speed
+  elseif state == "title" then
+    camera.y = camera.y - camera.titleSpeed * dt
+  end
 end
 
 function camera.set(factor)
@@ -49,4 +53,8 @@ function camera.shake(force)
       end)
     end)
   end)
+end
+
+function camera.generateY()
+  return ship.y + ship.height / 2 - height / 1.12
 end
