@@ -3,20 +3,21 @@
 Block = {}
 Block.__index = Block
 
-function Block:new(x, y, width, height, collidable)
+function Block:new(buffer, x, y, width, height, collidable)
   local t = setmetatable({
     x = x,
     y = y,
     xTiles = math.ceil(width / tileSize),
     yTiles = math.ceil(height / tileSize),
-    collidable = collidable
+    collidable = collidable,
+    image = buffer
   }, Block)
   
   if collidable == nil then t.collidable = true end
   t.width = tileSize * t.xTiles
   t.height = tileSize * t.yTiles
   t.smokes = {}
-  t.image = love.graphics.newSpriteBatch(tiles, math.floor(t.xTiles * t.yTiles * 3))
+  buffer = buffer[1]
   
   -- base and corners
   for x = 0, t.xTiles - 1 do
@@ -36,7 +37,7 @@ function Block:new(x, y, width, height, collidable)
         quad = nil
       end
       
-      if quad then t.image:addq(quad, x * tileSize, y * tileSize, 0, 2) end
+      if quad then buffer:addq(quad, x * tileSize, y * tileSize, 0, 2) end
     end
   end
   
@@ -65,7 +66,7 @@ function Block:new(x, y, width, height, collidable)
         or (x == 0 and y == t.yTiles - 1)
         or (x == t.xTiles - 1 and y == 0)
         or (x == t.xTiles - 1 and y == t.yTiles - 1)) then
-          t.image:addq(quads[type], x * tileSize, y * tileSize, 0, 2)
+          buffer:addq(quads[type], x * tileSize, y * tileSize, 0, 2)
         end
       end
     else
@@ -81,7 +82,7 @@ function Block:new(x, y, width, height, collidable)
         or (x == 0 and y == t.yTiles - 1)
         or (x == t.xTiles - 1 and y == 0)
         or (x == t.xTiles - 1 and y == t.yTiles - 1)) then
-          t.image:addq(quads[type], x * tileSize, y * tileSize, 0, 2)
+          buffer:addq(quads[type], x * tileSize, y * tileSize, 0, 2)
         end
       end
     end
@@ -89,7 +90,7 @@ function Block:new(x, y, width, height, collidable)
   
   -- smoke tiles
   for _, v in pairs(t.smokes) do
-    t.image:addq(quads[v.x == 0 and 10 or 9], v.x * tileSize, v.y * tileSize, 0, 2)
+    buffer:addq(quads[v.x == 0 and 10 or 9], v.x * tileSize, v.y * tileSize, 0, 2)
   end
   
   return t
@@ -103,16 +104,15 @@ function Block:update(dt)
     then
         ship.collide()
     end
-    
-    if self.y > camera.y + height then self.list.remove(self) end
   end
   
+  if self.y > camera.y + height then self.list.remove(self) end
   for _, v in pairs(self.smokes) do v.system:update(dt) end
 end
 
 function Block:draw()
   for _, v in pairs(self.smokes) do love.graphics.draw(v.system) end
-  love.graphics.draw(self.image, self.x, self.y)
+  love.graphics.draw(self.image[1], self.x, self.y)
 end
 
 function Block:generateSmoke(x, y)

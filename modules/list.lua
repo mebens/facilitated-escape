@@ -13,15 +13,25 @@ local function iterate(list, current)
 end
 
 function list.add(t, obj)
-  if not t.first then
-    t.first = obj
-    t.last = obj
-  else
+  if t.first then
     t.last.next = obj
     obj.prev = t.last
-    t.last = obj
+  else
+    t.first = obj
   end
   
+  t.last = obj
+  t.count = t.count + 1
+  return obj
+end
+
+function list.unshift(t, obj)
+  if t.first then
+    t.first.prev = obj
+    obj.next = t.first
+  end
+  
+  t.first = obj
   t.count = t.count + 1
   return obj
 end

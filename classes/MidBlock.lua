@@ -3,15 +3,15 @@
 MidBlock = {}
 MidBlock.__index = MidBlock
 
-function MidBlock:new(x, y, size)
+function MidBlock:new(buffer, x, y, size)
   local t = setmetatable({
     x = x,
     y = y,
-    tiles = math.ceil(size / tileSize)
+    tiles = math.ceil(size / tileSize),
+    image = buffer
   }, MidBlock)
   
   t.size = t.tiles * tileSize
-  t.image = love.graphics.newSpriteBatch(tiles, t.tiles * t.tiles)
   
   for x = 0, t.tiles - 1 do
     for y = 0, t.tiles - 1 do
@@ -29,7 +29,7 @@ function MidBlock:new(x, y, size)
         quad = quads[16]
       end
       
-      t.image:addq(quad, x * tileSize, y * tileSize, 0, 2)
+      buffer[1]:addq(quad, x * tileSize, y * tileSize, 0, 2)
     end
   end
   
@@ -41,5 +41,5 @@ function MidBlock:update(dt)
 end
 
 function MidBlock:draw()
-  love.graphics.draw(self.image, self.x, self.y)
+  love.graphics.draw(self.image[1], self.x, self.y)
 end
