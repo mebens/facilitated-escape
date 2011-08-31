@@ -8,4 +8,5 @@ function love.conf(t)
   t.modules.physics = false
   t.screen.width = 400
   t.screen.height = 600
+  t.screen.vsync = false
 end

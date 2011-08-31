@@ -111,6 +111,7 @@ function blocks.middle.generate()
     if math.random(1, 3) == 1 then
       local size = math.min(math.random(3, 6), xTiles - x)
       local y = baseY + math.random(0, blocks.middle.maxHeight - size) * tileSize
+      blocks.middle.buffers.last[1]:clear()
       blocks.middle.add(MidBlock:new(blocks.middle.buffers.last, x * tileSize + xOffset, y, size * tileSize))
       x = x + size + 3
     else

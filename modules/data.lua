@@ -44,7 +44,7 @@ function data.send()
       "http://nova-fusion.com/games/facilitated-escape/score.php",
       ("plays=%d&total=%d&best=%d"):format(data.plays, data.total, data.best)
     )
-    print(body)
+    
     -- this is so I can turn it all off if I need to
     if body == "STOP" then
       data.sendData = false
