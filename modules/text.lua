@@ -5,15 +5,15 @@ text = {}
 text.title = {
   title = "Facilitated\nEscape",
   press = "Press space to start",
-  keys = "Press M to mute the music, P to pause, and escape to quit.",
+  etc = "Made by Michael Ebens\n\nPress M to mute the music,\nP to pause, and escape to quit.",
   active = false,
   alpha = 0
 }
 
 text.score = {
   message = "You travelled",
-  distanceFormat = "%d meters",
-  statsFormat = "Highscore: %dm\nPlays: %d\nTotal Distance: %sm\nAverage: %.1fm",
+  distanceFormat = "%s meters",
+  statsFormat = "Highscore: %dm\nPlays: %d\nTotal Distance: %sm\nAverage: %dm",
   press = "Press space to play again",
   active = false,
   alpha = 0
@@ -35,8 +35,8 @@ text.ui = {
 function text.draw()
   if text.title.active then
     text.shadowPrint(text.title.title, 150, fonts[36], text.title.alpha, 3)
-    text.shadowPrint(text.title.press, 450, fonts[16], text.title.alpha, 2)
-    text.shadowPrint(text.title.keys, 550, fonts[12], text.title.alpha, 2)
+    text.shadowPrint(text.title.press, 400, fonts[16], text.title.alpha, 2)
+    text.shadowPrint(text.title.etc, 530, fonts[12], text.title.alpha, 2)
   end
   
   if text.score.active then
@@ -68,11 +68,13 @@ function text.activate(name, notFade)
   end
   
   if name == "score" then
-    local found
-    local formattedTotal = tostring(data.total):gsub("(%d)(%d%d%d)$", "%1,%2", 1)
-    while found ~= 0 do formattedTotal, found = formattedTotal:gsub("(%d)(%d%d%d),", "%1,%2,", 1) end
-    text.score.distance = text.score.distanceFormat:format(math.floor(ship.distance / meter))
-    text.score.stats = text.score.statsFormat:format(data.best, data.plays, formattedTotal, data.total / data.plays)
+    text.score.distance = text.score.distanceFormat:format(formatNumber(math.floor(ship.distance / meter)))
+    text.score.stats = text.score.statsFormat:format(
+      data.best,
+      data.plays,
+      formatNumber(data.total),
+      math.floor(data.total / data.plays)
+    )
   end
 end
 

@@ -52,7 +52,7 @@ function love.update(dt)
     camera.update(dt)
     background.update(dt)
     blocks.update(dt)
-    if tutorial and tutorial.active then tutorial.update(dt) end
+    if tutorial then tutorial.update(dt) end
     if state == "game" or state == "score" then ship.update(dt) end
   end
 end
@@ -67,7 +67,7 @@ function love.draw()
   camera.unset()
 
   camera.set()
-  if tutorial and tutorial.active then tutorial.draw() end
+  if tutorial then tutorial.draw() end
   if state == "game" then ship.draw() end
   blocks.front.draw()
   if state ~= "game" and state ~= "title" then ship.draw() end
@@ -113,8 +113,7 @@ function love.focus(f)
 end
 
 function love.quit()
-  love.audio.stop()
-  if state ~= "title" then data.send() end
+  data.onQuit()
 end
 
 function changeState(to)
@@ -176,6 +175,13 @@ function changeState(to)
     text.deactivate("pause")
     text.activate("ui")
   end
+end
+
+function fadeChangeState(to)
+  tween(0.15, _G, { blackAlpha = 255 }, nil, function()
+    changeState(to)
+    tween(0.15, _G, { blackAlpha = 0 })
+  end)
 end
 
 function loadResources()
@@ -260,9 +266,9 @@ function shipTweens()
   tween(1, ship, { fireSpeed = 400 })
 end
 
-function fadeChangeState(to)
-  tween(0.15, _G, { blackAlpha = 255 }, nil, function()
-    changeState(to)
-    tween(0.15, _G, { blackAlpha = 0 })
-  end)
+function formatNumber(num)
+  local found
+  local formatted = tostring(num):gsub("(%d)(%d%d%d)$", "%1,%2", 1)
+  while found ~= 0 do formatted, found = formatted:gsub("(%d)(%d%d%d),", "%1,%2,", 1) end
+  return formatted
 end

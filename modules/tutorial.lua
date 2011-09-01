@@ -1,5 +1,4 @@
 tutorial = {}
-tutorial.active = true
 tutorial.foundBlock = false
 tutorial.stage = 0
 
@@ -32,8 +31,9 @@ function tutorial.update(dt)
   end
   
   if tutorial.stage == 2 and camera.y + height < tutorial.avoidY then
-    tutorial.active = false
     if dtFactor < 1 then tween(0.3, _G, { dtFactor = 1 }, "outQuad") end
+    tutorial = nil
+    return
   end
   
   if tutorial.stage == 1 and tutorial.pressed then
