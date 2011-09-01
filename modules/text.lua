@@ -12,7 +12,7 @@ text.title = {
 
 text.score = {
   message = "You travelled",
-  distanceFormat = "%s meters",
+  distanceFormat = "%d meters",
   statsFormat = "Highscore: %dm\nPlays: %d\nTotal Distance: %sm\nAverage: %dm",
   press = "Press space to play again",
   active = false,
@@ -68,7 +68,7 @@ function text.activate(name, notFade)
   end
   
   if name == "score" then
-    text.score.distance = text.score.distanceFormat:format(formatNumber(math.floor(ship.distance / meter)))
+    text.score.distance = text.score.distanceFormat:format(math.floor(ship.distance / meter))
     text.score.stats = text.score.statsFormat:format(
       data.best,
       data.plays,

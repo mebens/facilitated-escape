@@ -31,7 +31,6 @@ ps:stop()
 ship.smoke = ps
 
 ps = love.graphics.newParticleSystem(particle, 1000)
-ps:setEmissionRate(250)
 ps:setParticleLife(0.2, 0.5)
 ps:setSize(1, 3)
 ps:setDirection(-math.tau / 4)
@@ -47,7 +46,9 @@ function ship.reset()
   ship.initialY = ship.y
   ship.dead = false
   ship.fireSpeed = 75
-  ship.fire:setSpeed(25, 125)
+  ship.fireRate = 250
+  ship.fire:setSpeed(ship.fireSpeed - 50, ship.fireSpeed + 50)
+  ship.fire:setEmissionRate(ship.fireRate)
   ship.fire:start()
 end
 
@@ -61,8 +62,14 @@ function ship.update(dt)
     return
   end
   
+  if ship.ySpeed < 650 then
+    ship.ySpeed = math.min(ship.ySpeed + ship.yIncrease * dt, 650)
+    ship.fireSpeed = ship.fireSpeed + ship.yIncrease / 3 * dt
+    ship.fireRate = ship.fireRate + ship.yIncrease / 1.5 * dt
+    ship.fire:setEmissionRate(ship.fireRate)
+  end
+  
   ship.y = ship.y - ship.ySpeed * dt
-  if ship.ySpeed < 650 then ship.ySpeed = math.min(ship.ySpeed + ship.yIncrease * dt, 650) end
   ship.distance = math.abs(ship.y - ship.initialY)
   ship.fire:setSpeed(ship.fireSpeed - 50, ship.fireSpeed + 50)
   

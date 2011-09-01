@@ -21,7 +21,7 @@ blocks.middle = {
 }
 
 -- maxWidth, maxHeight, and maxSize are specified in tiles
-blocks.front.maxHeight = math.floor(blocks.front.step / 1.2 / tileSize)
+blocks.front.maxHeight = math.floor(blocks.front.step / 1.3 / tileSize)
 blocks.middle.maxHeight = math.floor(blocks.middle.step / 1.15 / tileSize)
 
 for i = 1, 9 do
