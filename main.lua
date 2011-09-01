@@ -231,8 +231,9 @@ function loadResources()
     engine = love.audio.newSource("sounds/engine.ogg", "static"),
     death = love.audio.newSource("sounds/death.ogg", "static"),
     background = love.audio.newSource("sounds/background.ogg", "static"),
-    smallRumble = love.sound.newSoundData("sounds/small-rumble.ogg"),
-    smallRumble2 = love.sound.newSoundData("sounds/small-rumble2.ogg")
+    smallRumble1 = love.sound.newSoundData("sounds/small-rumble.ogg"),
+    smallRumble2 = love.sound.newSoundData("sounds/small-rumble2.ogg"),
+    smallRumble3 = love.sound.newSoundData("sounds/small-rumble3.ogg")
   }
   
   sfx.rumble:setVolume(0.5)
