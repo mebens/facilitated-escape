@@ -116,7 +116,7 @@ function Block:draw()
 end
 
 function Block:generateSmoke(x, y)
-  local ps = love.graphics.newParticleSystem(images.particle, 300)
+  local ps = love.graphics.newParticleSystem(particle, 300)
   ps:setEmissionRate(150)
   ps:setParticleLife(0.25, 0.4)
   ps:setSize(1, 2)

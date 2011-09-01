@@ -8,35 +8,35 @@ ship.yIncrease = 10
 ship.image = love.graphics.newImage("images/ship.png")
 ship.image:setFilter("nearest", "nearest")
 
-local ps = love.graphics.newParticleSystem(images.particle, 1000)
+local ps = love.graphics.newParticleSystem(particle, 1000)
 ps:setEmissionRate(10000)
 ps:setLifetime(0.1)
 ps:setParticleLife(0.2, 0.5)
-ps:setSize(0.5, 2)
+ps:setSize(1, 3)
 ps:setSpread(math.tau)
 ps:setSpeed(300, 600)
-ps:setColor(238, 88, 38, 255, 230, 60, 27, 0)
+ps:setColor(152, 41, 14, 150, 142, 38, 13, 0)
 ps:stop()
 ship.explosion = ps
 
-ps = love.graphics.newParticleSystem(images.particle, 500)
-ps:setEmissionRate(250)
+ps = love.graphics.newParticleSystem(particle, 2000)
+ps:setEmissionRate(1000)
 ps:setLifetime(1)
 ps:setParticleLife(4, 5)
-ps:setSize(2, 4)
+ps:setSize(1, 3)
 ps:setSpread(math.tau)
-ps:setSpeed(10, 20)
-ps:setColor(195, 195, 195, 255, 155, 155, 155, 0)
+ps:setSpeed(10, 18)
+ps:setColor(195, 195, 195, 200, 155, 155, 155, 0)
 ps:stop()
 ship.smoke = ps
 
-ps = love.graphics.newParticleSystem(images.particle, 1000)
-ps:setEmissionRate(100)
+ps = love.graphics.newParticleSystem(particle, 1000)
+ps:setEmissionRate(250)
 ps:setParticleLife(0.2, 0.5)
 ps:setSize(1, 3)
 ps:setDirection(-math.tau / 4)
 ps:setSpread(math.tau / 24)
-ps:setColor(220, 82, 38, 255, 220, 45, 32, 0)
+ps:setColor(152, 41, 14, 150, 142, 38, 13, 0)
 ship.fire = ps
 
 function ship.reset()
@@ -76,10 +76,14 @@ function ship.update(dt)
 end
 
 function ship.draw()
+  love.graphics.setBlendMode("additive")
   love.graphics.draw(ship.fire)
+  love.graphics.setBlendMode("alpha")
   
   if ship.dead then
+    love.graphics.setBlendMode("additive")
     love.graphics.draw(ship.explosion, ship.x, ship.y)
+    love.graphics.setBlendMode("alpha")
     love.graphics.draw(ship.smoke, ship.x, ship.y)
   else
     love.graphics.draw(ship.image, ship.x, ship.y, 0, 2)

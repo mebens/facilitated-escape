@@ -1,7 +1,3 @@
--- TODO
--- Implement two SpriteBatches per layer to improve performance
--- Allow nugding sides of blocks. Maybe make the game easier in other ways.
-
 function love.load()
   -- setup random numbers
   math.randomseed(os.time())
@@ -190,15 +186,9 @@ function loadResources()
     [36] = love.graphics.newFont("fonts/uni05.ttf", 36)
   }
 
-  images = {
-    particle = love.graphics.newImage("images/particle.png"),
-    facility = love.graphics.newImage("images/facility.png")
-  }
-    
+  particle = love.graphics.newImage("images/particle.png")
   tiles = love.graphics.newImage("images/tiles.png")
   tiles:setFilter("nearest", "nearest") -- makes it pixelated, not blurry
-  images.facility:setFilter("nearest", "nearest")
-  
   local tw = tiles:getWidth()
   local th = tiles:getHeight()
   

@@ -4,6 +4,7 @@ function love.conf(t)
   t.identity = t.title
   t.release = true
   t.version = 07
+  t.modules.mouse = false
   t.modules.joystick = false
   t.modules.physics = false
   t.screen.width = 400
