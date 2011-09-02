@@ -2,6 +2,13 @@
 
 sound = {}
 
+function sound.playRumble()
+  local source = love.audio.newSource(sfx.rumble)
+  source:setVolume(0.5)
+  source:play()
+  return source
+end
+
 function sound.processRumbles()
   sound.processRumble1()
   sound.processRumble2()

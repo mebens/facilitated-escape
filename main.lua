@@ -138,7 +138,7 @@ function changeState(to)
     cron.every(3, function()
       if state == "game" and math.random(1, 6) == 1 then
         camera.shake(4)
-        sfx.rumble:play()
+        sound.playRumble()
       end
     end)
   elseif state == "score" and to == "game" then
@@ -233,16 +233,15 @@ function loadResources()
   }
   
   sfx = {
-    rumble = love.audio.newSource("sounds/rumble.ogg", "static"),
     engine = love.audio.newSource("sounds/engine.ogg", "static"),
     death = love.audio.newSource("sounds/death.ogg", "static"),
     background = love.audio.newSource("sounds/background.ogg", "static"),
+    rumble = love.sound.newSoundData("sounds/rumble.ogg"),
     smallRumble1 = love.sound.newSoundData("sounds/small-rumble.ogg"),
     smallRumble2 = love.sound.newSoundData("sounds/small-rumble2.ogg"),
     smallRumble3 = love.sound.newSoundData("sounds/small-rumble3.ogg")
   }
   
-  sfx.rumble:setVolume(0.5)
   sfx.engine:setLooping(true)
   sfx.engine:setVolume(0.2)
   sfx.death:setVolume(0.5)
