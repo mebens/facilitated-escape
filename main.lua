@@ -1,9 +1,10 @@
 function love.load()
-  -- setup random numbers
+  -- setup calls
   math.randomseed(os.time())
   math.random()
   math.random()
-  math.random()  
+  math.random()
+  love.mouse.setVisible(false) 
   
   -- globals/variables
   width = love.graphics.getWidth()
@@ -31,7 +32,7 @@ function love.load()
   require("classes.Block")
   require("classes.MidBlock")
   
-  -- setup
+  -- setup scene
   data.init()
   background.reset()
   blocks.reset()
@@ -72,7 +73,7 @@ function love.draw()
   blocks.front.draw()
   if state ~= "game" and state ~= "title" then ship.draw() end
   camera.unset()
-
+  
   text.draw()
   
   if blackAlpha ~= 0 then
@@ -135,7 +136,7 @@ function changeState(to)
     text.deactivate("title", true)
     
     -- start rumbling
-    cron.every(3, function()
+    cron.every(6, function()
       if state == "game" and math.random(1, 6) == 1 then
         camera.shake(4)
         sound.playRumble()
